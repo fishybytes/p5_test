@@ -1,8 +1,10 @@
 const SCREEN_WIDTH = 400;
 const SCREEN_HEIGHT = 400;
 
-let numFlowers = 10;
+let numFlowers = 15;
 let flowers = [];
+let baseWind = 0.1;
+let windSpeed = 0.1;
 
 function getGoodLocation(existingLocations, threshold = 75) {
   let x, y;
@@ -49,6 +51,7 @@ function createFlowers(numFlowers) {
       sizeCenter: sizeCenter,
       sizePetals: sizePetals,
       petalDistance: petalDistance,
+      rotateSpeed: random(0.3, 0.6),
     })
   }
   return flowers
@@ -67,32 +70,39 @@ const KeyCode = Object.freeze({
 
 function drawFlower(flower) {
   let stemWidth = 10;
-  let x = flower.x;
+  let bottomX = flower.x;
+  let topX = bottomX + windSpeed * (100 / (flower.sizePetals / 30));
   let y = flower.y;
 
-  fill("brown");
-  rect(x - stemWidth / 2, y, stemWidth, height - y);
+  stroke("black")
+  strokeWeight(10)
+  line(topX, y, bottomX, height);
+  strokeWeight(5)
+  stroke("black")
 
   let d_angle = TWO_PI / flower.numPetals;
   let petalDistance = flower.petalDistance;
   let petalWidth = flower.sizePetals;
-  let rotateSpeed = 0.5; // rads per second
+  let rotateSpeed = flower.rotateSpeed;
 
   fill("pink");
   let speedBreath = sin(totalTime / 5000) * 0.02 + 1; // Breath effect
   for (let angle = 0; angle < TWO_PI; angle += d_angle) {
     angleTransformed = angle + (rotateSpeed * speedBreath * totalTime / 1000);
-    circle(x + cos(angleTransformed) * petalDistance, y + sin(angleTransformed) * petalDistance, petalWidth);
+    circle(topX + cos(angleTransformed) * petalDistance, y + sin(angleTransformed) * petalDistance, petalWidth);
   }
 
   fill("yellow");
-  circle(x, y, petalWidth * 0.7);
+  circle(topX, y, petalWidth * 0.7);
 }
 
 function draw() {
   totalTime += deltaTime
   background("lightblue");
 
+  windSpeed = baseWind + sin(totalTime / 1000) * 0.05; // Dynamic wind effect
+
+  smooth();
   for (let i = 0; i < flowers.length; i++) {
     drawFlower(flowers[i]);
   }
