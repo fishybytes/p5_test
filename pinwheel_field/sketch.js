@@ -74,9 +74,13 @@ function drawFlower(flower) {
   let topX = bottomX + windSpeed * (100 / (flower.sizePetals / 30));
   let y = flower.y;
 
+  push();
+  noFill();
   stroke("black")
   strokeWeight(10)
-  line(topX, y, bottomX, height);
+  //line(topX, y, bottomX, height);
+  bezier(bottomX, height, bottomX + 10, (height + y) / 2, topX - 30, y, topX, y);
+  pop();
   strokeWeight(5)
   stroke("black")
 
